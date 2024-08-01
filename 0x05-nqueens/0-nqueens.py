@@ -1,54 +1,69 @@
 #!/usr/bin/python3
 """
-Solution to the nqueens problem
+Solving the nqueens problem
 """
 import sys
 
-def is_valid(board, row, col):
+
+def backtrack(r, n, cols, pos, neg, board):
     """
-    Check if a queen can be placed at board[row][col]
+    backtrack() to identify a solution
     """
-    for i in range(row):
-        if board[i] == col or \
-           board[i] - i == col - row or \
-           board[i] + i == col + row:
-            return False
-    return True
+    if r == n:
+        res = []
+        for l in range(len(board)):
+            for k in range(len(board[l])):
+                if board[l][k] == 1:
+                    res.append([l, k])
+        print(res)
+        return
 
-def solve_nqueens(n):
-    def backtrack(row):
-        if row == n:
-            res = []
-            for i in range(n):
-                res.append([i, board[i]])
-            print(res)
-            return
-        
-        for col in range(n):
-            if is_valid(board, row, col):
-                board[row] = col
-                backtrack(row + 1)
-                board[row] = -1
+    for c in range(n):
+        if c in cols or (r + c) in pos or (r - c) in neg:
+            continue
 
-    board = [-1] * n
-    backtrack(0)
+        cols.add(c)
+        pos.add(r + c)
+        neg.add(r - c)
+        board[r][c] = 1
 
-def main():
-    if len(sys.argv) != 2:
+        backtrack(r+1, n, cols, pos, neg, board)
+
+        cols.remove(c)
+        pos.remove(r + c)
+        neg.remove(r - c)
+        board[r][c] = 0
+
+
+def nqueens(n):
+    """
+    Solution to the N-Queens problem.
+    Args:
+        n (int): The number of queens to place on the board. Must be greater than or equal to 4.
+    Returns:
+        List[List[int]]: A list of lists, each representing a solution where each sublist contains
+                         the coordinates of queens on the board. Each sublist represents a single solution.
+    """
+
+    cols = set()
+    pos_diag = set()
+    neg_diag = set()
+    board = [[0] * n for i in range(n)]
+
+    backtrack(0, n, cols, pos_diag, neg_diag, board)
+
+
+if __name__ == "__main__":
+    n = sys.argv
+    if len(n) != 2:
         print("Usage: nqueens N")
         sys.exit(1)
-
     try:
-        n = int(sys.argv[1])
+        nn = int(n[1])
+        if nn < 4:
+            print("N must be at least 4")
+            sys.exit(1)
+        nqueens(nn)
     except ValueError:
         print("N must be a number")
         sys.exit(1)
-
-    if n < 4:
-        print("N must be at least 4")
-        sys.exit(1)
-
-    solve_nqueens(n)
-
-if __name__ == "__main__":
-    main()
