@@ -2,28 +2,26 @@
 """2D matrix rotation module.
 """
 
-
 def rotate_2d_matrix(matrix):
-    """Rotates an m by n 2D matrix in place.
+    """Rotates a 2D matrix 90 degrees clockwise in place.
+    
+    Args:
+        matrix (list of list of int): The matrix to be rotated.
     """
-    if type(matrix) != list:
+    if not isinstance(matrix, list) or not matrix:
         return
-    if len(matrix) <= 0:
+    if not all(isinstance(row, list) for row in matrix):
         return
-    if not all(map(lambda x: type(x) == list, matrix)):
-        return
-    rows = len(matrix)
-    cols = len(matrix[0])
-    if not all(map(lambda x: len(x) == cols, matrix)):
-        return
-    c, r = 0, rows - 1
-    for i in range(cols * rows):
-        if i % rows == 0:
-            matrix.append([])
-        if r == -1:
-            r = rows - 1
-            c += 1
-        matrix[-1].append(matrix[r][c])
-        if c == cols - 1 and r >= -1:
-            matrix.pop(r)
-        r -= 1
+    n = len(matrix)
+    for i in range(n // 2):
+        for j in range(i, n - i - 1):
+            # Save the top element
+            temp = matrix[i][j]
+            # Move left element to top
+            matrix[i][j] = matrix[n - j - 1][i]
+            # Move bottom element to left
+            matrix[n - j - 1][i] = matrix[n - i - 1][n - j - 1]
+            # Move right element to bottom
+            matrix[n - i - 1][n - j - 1] = matrix[j][n - i - 1]
+            # Assign temp to right
+            matrix[j][n - i - 1] = temp
